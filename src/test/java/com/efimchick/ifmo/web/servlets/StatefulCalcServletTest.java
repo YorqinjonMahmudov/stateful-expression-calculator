@@ -1,13 +1,6 @@
 package com.efimchick.ifmo.web.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.IntStream;
-
+import com.google.common.collect.ImmutableMap;
 import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
@@ -30,16 +23,20 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StatefulCalcServletTest {
 
@@ -98,7 +95,7 @@ public class StatefulCalcServletTest {
             }
 
             ResponseRecord response = getResult(httpClient, httpContext);
-            
+
             assertEquals(String.valueOf(result), response.body);
 
         } catch (Exception e) {
@@ -246,13 +243,13 @@ public class StatefulCalcServletTest {
     public void test011() throws Exception {
         CompletableFuture.allOf(
                 IntStream.range(0, 10).mapToObj((i) -> (Runnable) () -> {
-                    final int a = randomInt();
-                    final int b = randomInt();
-                    final Arg<Integer> c = randomChoose(arg("a", a), arg("b", b));
-                    testExpression("(c*(a-b)/b)*a",
-                            ImmutableMap.of("a", a, "b", b, "c", c.name),
-                            (c.val * (a - b) / b) * a);
-                }).map(CompletableFuture::runAsync)
+                            final int a = randomInt();
+                            final int b = randomInt();
+                            final Arg<Integer> c = randomChoose(arg("a", a), arg("b", b));
+                            testExpression("(c*(a-b)/b)*a",
+                                    ImmutableMap.of("a", a, "b", b, "c", c.name),
+                                    (c.val * (a - b) / b) * a);
+                        }).map(CompletableFuture::runAsync)
                         .toArray(CompletableFuture[]::new)
         ).join();
     }
@@ -341,12 +338,12 @@ public class StatefulCalcServletTest {
     @Test
     @DisplayName("Implementation must use Servlets and Filters")
     public void testSources() throws IOException {
-            assertTrue(Utils.findInSource("javax.servlet.Filter"));
-            assertTrue(Utils.findInSource("void doFilter"));
-            assertTrue(Utils.findInSource("javax.servlet.http.HttpServlet"));
-            assertTrue(Utils.findInSource("void doPut"));
-            assertTrue(Utils.findInSource("void doDelete"));
-            assertTrue(Utils.findInSource("void doGet"));
+        assertTrue(Utils.findInSource("javax.servlet.Filter"));
+        assertTrue(Utils.findInSource("void doFilter"));
+        assertTrue(Utils.findInSource("javax.servlet.http.HttpServlet"));
+        assertTrue(Utils.findInSource("void doPut"));
+        assertTrue(Utils.findInSource("void doDelete"));
+        assertTrue(Utils.findInSource("void doGet"));
     }
 
     private Random random = new Random();
